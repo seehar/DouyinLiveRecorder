@@ -18,7 +18,6 @@ def run_cli():
 
 def run_gui():
     app.init(True)
-    ...
 
 
 if __name__ == '__main__':

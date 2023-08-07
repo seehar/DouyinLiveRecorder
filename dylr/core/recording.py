@@ -30,7 +30,7 @@ class Recording:
             return False
 
         now = time.localtime()
-        now_str = time.strftime('%Y%m%d_%H%M%S', now)
+        now_str = time.strftime("%Y%m%d_%H%M%S", now)
         video_filename = f"download/{self.room.room_name}/{now_str}.flv"
 
         try:
@@ -54,22 +54,26 @@ class Recording:
             record_manager.recordings.remove(self)
             return False
         now = time.localtime()
-        now_str = time.strftime('%Y%m%d_%H%M%S', now)
+        now_str = time.strftime("%Y%m%d_%H%M%S", now)
         video_filename = f"download/{self.room.room_name}/{now_str}.flv"
         self.video_recorder = None
-        logger.info_and_print(f'检测到 {self.room.room_name}({self.room.room_id}) 未下播，继续录制')
+        logger.info(f"检测到 {self.room.room_name}({self.room.room_id}) 未下播，继续录制")
         self.start_recording_video(video_filename)
 
     def start_recording_video(self, filename):
         if self.video_recorder is not None:
             return
         self.video_recorder = VideoRecorder(self.room, self.room_info, self)
-        threading.Thread(target=self.video_recorder.start_recording, args=(filename,)).start()
+        threading.Thread(
+            target=self.video_recorder.start_recording, args=(filename,)
+        ).start()
 
     def start_recording_danmu(self, start_time):
         if self.danmu_recorder is not None:
             return
-        self.danmu_recorder = DanmuRecorder(self.room, self.room_info.get_real_room_id(), start_time)
+        self.danmu_recorder = DanmuRecorder(
+            self.room, self.room_info.get_real_room_id(), start_time
+        )
         t = threading.Thread(target=self.danmu_recorder.start)
         t.setDaemon(True)
         t.start()

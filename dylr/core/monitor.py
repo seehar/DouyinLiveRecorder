@@ -75,18 +75,20 @@ def important_monitor(room):
             try:
                 check_room(room)
             except Exception as err:
-                logger.fatal_and_print(traceback.format_exc())
+                logger.exception(traceback.format_exc())
                 pass  # 防止报错停止检测线程
-        time.sleep(config.get_important_check_period() +
-                   random.uniform(0, config.get_important_check_period_random_offset()))
+        time.sleep(
+            config.get_important_check_period()
+            + random.uniform(0, config.get_important_check_period_random_offset())
+        )
 
 
 def check_thread_main():
     if not record_manager.get_monitor_rooms():
-        logger.info_and_print('检测房间列表为空')
+        logger.info("检测房间列表为空")
     global check_rooms_queue
     while True:
-        # logger.debug_and_print('new task for checking')
+        # logger.debug('new task for checking')
         check_rooms_queue = record_manager.get_monitor_rooms()
         check_rooms_queue.reverse()
         futures = []
@@ -96,7 +98,10 @@ def check_thread_main():
         for future in futures:
             future.result()
         # 等待一定时间后再进行下一轮检测
-        time.sleep(config.get_check_period()+random.uniform(0, config.get_check_period_random_offset()))
+        time.sleep(
+            config.get_check_period()
+            + random.uniform(0, config.get_check_period_random_offset())
+        )
 
 
 def check_thread_task():
@@ -118,7 +123,7 @@ def check_thread_task():
         try:
             check_room(room)
         except Exception as err:
-            logger.fatal_and_print(traceback.format_exc())
+            logger.exception(traceback.format_exc())
             pass  # 防止报错停止检测线程
 
         end_time = time.time()
@@ -131,10 +136,12 @@ def check_thread_task():
 def check_room(room):
     try:
         check_room_using_api(room)
-    except (requests.exceptions.ConnectionError,
-            requests.exceptions.ChunkedEncodingError,
-            requests.exceptions.ReadTimeout,
-            requests.exceptions.ProxyError):
+    except (
+        requests.exceptions.ConnectionError,
+        requests.exceptions.ChunkedEncodingError,
+        requests.exceptions.ReadTimeout,
+        requests.exceptions.ProxyError,
+    ):
         logger.debug(traceback.format_exc())
 
 
@@ -145,7 +152,7 @@ def rooms_without_web_rid_thread():
         for room in record_manager.get_room_without_web_rid():
             nickname, web_rid = dy_api.get_user_info(room.user_sec_id)
             if web_rid is not None:
-                logger.info(f'发现主播{nickname}开播，获取webrid: {web_rid}')
+                logger.info(f"发现主播{nickname}开播，获取webrid: {web_rid}")
                 if app.win_mode:
                     app.win.remove_room(room.room_id)
                 room.room_id = web_rid
@@ -158,7 +165,7 @@ def rooms_without_web_rid_thread():
 
 
 def check_room_using_api(room):
-    # logger.debug_and_print(f'checking {room.room_name}({room.room_id})')
+    # logger.debug(f'checking {room.room_name}({room.room_id})')
 
     room_json = dy_api.get_live_state_json(room.room_id)
     if room_json is None:
@@ -166,6 +173,6 @@ def check_room_using_api(room):
         return
     room_info = RoomInfo(room, room_json)
     if room_info.is_going_on_live():
-        logger.info_and_print(f'检测到 {room.room_name}({room.room_id}) 开始直播，启动录制。')
+        logger.info(f"检测到 {room.room_name}({room.room_id}) 开始直播，启动录制。")
 
         record_manager.start_recording(room, room_info)

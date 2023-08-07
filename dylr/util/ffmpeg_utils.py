@@ -10,6 +10,7 @@ class VideoFilter:
     """
     视频滤镜
     """
+
     def __init__(self):
         self._scale_width = None
         self._scale_height = None
@@ -99,11 +100,16 @@ class VideoFilter:
         self.set_scale(scale_width, scale_height)
         self.set_pad(width_output, height_output, x, y)
         """
-        self.set_scale(fr"'if(gte(iw/ih\,{width}/{height})\,{width}\,ceil({height}/ih*iw/2)*2)'",
-                       fr"'if(gte(iw/ih\,{width}/{height})\,ceil({width}/iw*ih/2)*2\,{height})'")
-        self.set_pad(width, height,
-                     fr"'if(gte(iw/ih\,{width}/{height})\,0\,({width}-({height}/ih*iw))/2)'",
-                     fr"'if(gte(iw/ih\,{width}/{height})\,({height}-({width}/iw*ih))/2,0)'")
+        self.set_scale(
+            fr"'if(gte(iw/ih\,{width}/{height})\,{width}\,ceil({height}/ih*iw/2)*2)'",
+            fr"'if(gte(iw/ih\,{width}/{height})\,ceil({width}/iw*ih/2)*2\,{height})'",
+        )
+        self.set_pad(
+            width,
+            height,
+            fr"'if(gte(iw/ih\,{width}/{height})\,0\,({width}-({height}/ih*iw))/2)'",
+            fr"'if(gte(iw/ih\,{width}/{height})\,({height}-({width}/iw*ih))/2,0)'",
+        )
 
     def set_ass(self, file):
         """
@@ -113,22 +119,24 @@ class VideoFilter:
         self._ass = file
 
     def generate(self) -> str:
-        res = ''
+        res = ""
         if self._scale_width is not None and self._scale_height is not None:
-            res += f'scale={self._scale_width}:{self._scale_height},'
+            res += f"scale={self._scale_width}:{self._scale_height},"
         if self._fps is not None:
-            res += f'fps={self._fps},'
-        if self._pad_width is not None and \
-           self._pad_height is not None and \
-           self._pad_x is not None and \
-           self._pad_y is not None and \
-           self._pad_bg_color is not None:
-            res += f'pad={self._pad_width}:{self._pad_height}:{self._pad_x}:{self._pad_y}:{self._pad_bg_color},'
+            res += f"fps={self._fps},"
+        if (
+            self._pad_width is not None
+            and self._pad_height is not None
+            and self._pad_x is not None
+            and self._pad_y is not None
+            and self._pad_bg_color is not None
+        ):
+            res += f"pad={self._pad_width}:{self._pad_height}:{self._pad_x}:{self._pad_y}:{self._pad_bg_color},"
         if self._ass is not None:
             res += f"ass='{self._ass}'"
 
-        if res != '':
-            res = res.strip(',')  # 去掉最后的逗号(不一定有逗号)
+        if res != "":
+            res = res.strip(",")  # 去掉最后的逗号(不一定有逗号)
         return res
 
 
@@ -136,6 +144,7 @@ class AudioFilter:
     """
     声音滤镜
     """
+
     def __init__(self):
         self._volume = None
         self._loudnorm = None
@@ -155,14 +164,14 @@ class AudioFilter:
         self._loudnorm = value
 
     def generate(self) -> str:
-        res = ''
+        res = ""
         if self._volume is not None:
-            res += f'volume={self._volume},'
+            res += f"volume={self._volume},"
         if self._loudnorm is not None:
-            res += f'loudnorm=i={self._loudnorm},'
+            res += f"loudnorm=i={self._loudnorm},"
 
-        if res != '':
-            res = res.strip(',')  # 去掉最后的逗号(不一定有逗号)
+        if res != "":
+            res = res.strip(",")  # 去掉最后的逗号(不一定有逗号)
         return res
 
 
@@ -211,7 +220,7 @@ class FFMpegUtils:
         """
         self._concat_mode = True
 
-    def set_filelist_mode(self, filelist_name: str = 'filelist.txt'):
+    def set_filelist_mode(self, filelist_name: str = "filelist.txt"):
         """
         设置拼接的输入文件从filelist.txt中读取
         因为纯concat模式可能不会加载所有文件
@@ -336,13 +345,13 @@ class FFMpegUtils:
         """
         生成命令行指令
         """
-        res = 'ffmpeg '
+        res = "ffmpeg "
         # input fps
         if self._input_fps is not None:
-            res += f'-r {self._input_fps} '
+            res += f"-r {self._input_fps} "
         # input files
         if not self._filelist_mode and not self._input:
-            raise Exception('缺少输入文件')
+            raise Exception("缺少输入文件")
         if self._concat_mode:
             if self._filelist_mode:
                 res += f'-f concat -i "{self._filelist_name}" '
@@ -350,54 +359,54 @@ class FFMpegUtils:
                 res += '-i "concat:'
                 for i in self._input:
                     res += f"'{i}'|"
-                res = res.strip('|') + '" '
+                res = res.strip("|") + '" '
         else:
             for file in self._input:
                 res += f'-i "{file}" '
         # codec
         if self._codec is not None:
-            res += f'-c {self._codec} '
+            res += f"-c {self._codec} "
         if self._video_codec is not None:
-            res += f'-c:v {self._video_codec} '
+            res += f"-c:v {self._video_codec} "
         if self._audio_codec is not None:
-            res += f'-c:a {self._audio_codec} '
+            res += f"-c:a {self._audio_codec} "
         # bit rate
         if self._bit_rate is not None:
-            res += f'-b {self._bit_rate} '
+            res += f"-b {self._bit_rate} "
         if self._video_bit_rate is not None:
-            res += f'-b:v {self._video_bit_rate} '
+            res += f"-b:v {self._video_bit_rate} "
         if self._audio_bit_rate is not None:
-            res += f'-b:a {self._audio_bit_rate} '
+            res += f"-b:a {self._audio_bit_rate} "
         # audio sampling rate
         if self._audio_sampling_rate is not None:
-            res += f'-ar {self._audio_sampling_rate} '
+            res += f"-ar {self._audio_sampling_rate} "
         # -ss and -t
         if self._ss is not None:
-            res += f'-ss {self._ss} '
+            res += f"-ss {self._ss} "
         if self._t is not None:
-            res += f'-t {self._t} '
+            res += f"-t {self._t} "
         # video filter
         vf = self.video_filters().generate()
-        if vf != '':
+        if vf != "":
             res += f'-vf "{vf}" '
         # audio filter
         af = self.audio_filters().generate()
-        if af != '':
+        if af != "":
             res += f'-af "{af}" '
         # output fps
         if self._output_fps is not None:
-            res += f'-r {self._output_fps} '
+            res += f"-r {self._output_fps} "
         # override
         if self._override:
-            res += '-y '
+            res += "-y "
         # no video or audio
         if self._no_video:
-            res += '-vn '
+            res += "-vn "
         if self._no_audio:
-            res += '-an '
+            res += "-an "
         # output file
         if self._output_name is None:
-            raise Exception('未设置输出文件名')
+            raise Exception("未设置输出文件名")
         res += self._output_name
 
         return res

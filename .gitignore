@@ -1,9 +1,22 @@
-/.idea
-/venv
-*/__pycache__
-/logs
+.idea/
+build/
+
+__pycache__/
+*.py[cod]
+*$py.class
+
 /download
 /dylr/test
 /dylr/old/
 forum.MD
 rooms - bak.json
+
+/log
+/logs
+*.log
+*.pyc
+
+.venv
+venv/
+env.bak/
+venv.bak/

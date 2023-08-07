@@ -14,23 +14,23 @@ class RoomInfo:
 
     def get_real_room_id(self):
         """ 获取 id_str , 不是 web_rid """
-        return self.room_json['id_str']
+        return self.room_json["id_str"]
 
     def is_going_on_live(self) -> bool:
         """ 是否在直播 """
-        if not self.room_json or 'status' not in self.room_json:
+        if not self.room_json or "status" not in self.room_json:
             cookie_utils.record_cookie_failed()
             return False
-        return self.room_json['status'] == 2
+        return self.room_json["status"] == 2
 
     def get_stream_url(self):
         """ 直播流地址 """
-        if not self.room_json or 'stream_url' not in self.room_json:
+        if not self.room_json or "stream_url" not in self.room_json:
             return None
-        return self.room_json['stream_url']['flv_pull_url']['FULL_HD1']
+        return self.room_json["stream_url"]["flv_pull_url"]["FULL_HD1"]
 
     def get_nick_name(self):
         """ 主播名 """
-        if not self.room_json or 'owner' not in self.room_json:
+        if not self.room_json or "owner" not in self.room_json:
             return None
-        return self.room_json['owner']['nickname']
+        return self.room_json["owner"]["nickname"]
