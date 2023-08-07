@@ -13,6 +13,9 @@ from dylr.util import logger, cookie_utils
 
 
 class DanmuRecorder:
+    start_time_t: int
+    filename: str
+
     def __init__(self, room, room_real_id, start_time=None):
         self.room = room
         self.room_id = room.room_id
@@ -49,42 +52,42 @@ class DanmuRecorder:
             url=dy_api.get_danmu_ws_url(self.room_id, self.room_real_id),
             header=dy_api.get_request_headers(),
             cookie=cookie_utils.cookie_cache,
-            on_message=self._onMessage,
-            on_error=self._onError,
-            on_close=self._onClose,
-            on_open=self._onOpen,
+            on_message=self._on_message,
+            on_error=self._on_error,
+            on_close=self._on_close,
+            on_open=self._on_open,
         )
         self.ws.run_forever()
 
     def stop(self):
         self.stop_signal = True
 
-    def _onOpen(self, ws):
+    def _on_open(self, ws):
         _thread.start_new_thread(self._heartbeat, (ws,))
 
-    def _onMessage(self, ws: websocket.WebSocketApp, message: bytes):
-        wssPackage = PushFrame()
-        wssPackage.ParseFromString(message)
-        logid = wssPackage.logid
-        decompressed = gzip.decompress(wssPackage.payload)
-        payloadPackage = Response()
-        payloadPackage.ParseFromString(decompressed)
+    def _on_message(self, ws: websocket.WebSocketApp, message: bytes):
+        wss_package = PushFrame()
+        wss_package.ParseFromString(message)
+        logid = wss_package.logid
+        decompressed = gzip.decompress(wss_package.payload)
+        payload_package = Response()
+        payload_package.ParseFromString(decompressed)
 
         # 发送ack包
-        if payloadPackage.needAck:
+        if payload_package.needAck:
             obj = PushFrame()
             obj.payloadType = "ack"
             obj.logid = logid
-            obj.payloadType = payloadPackage.internalExt
+            obj.payloadType = payload_package.internalExt
             data = obj.SerializeToString()
             ws.send(data, websocket.ABNF.OPCODE_BINARY)
         # 处理消息
-        for msg in payloadPackage.messagesList:
+        for msg in payload_package.messagesList:
             if msg.method == "WebcastChatMessage":
-                chatMessage = ChatMessage()
-                chatMessage.ParseFromString(msg.payload)
+                chat_message = ChatMessage()
+                chat_message.ParseFromString(msg.payload)
                 data = json_format.MessageToDict(
-                    chatMessage, preserving_proto_field_name=True
+                    chat_message, preserving_proto_field_name=True
                 )
                 now = time.time()
                 second = now - self.start_time_t
@@ -133,11 +136,11 @@ class DanmuRecorder:
             t += 1
             time.sleep(1)
 
-    def _onError(self, ws, error):
+    def _on_error(self, ws, error):
         logger.error(f"[onError] {self.room_name}({self.room_id})弹幕录制抛出一个异常")
         logger.error(traceback.format_exc())
 
-    def _onClose(self, ws, a, b):
+    def _on_close(self, ws, a, b):
         # 写入文件尾
         with open(self.filename, "a", encoding="UTF-8") as file:
             file.write("</i>")

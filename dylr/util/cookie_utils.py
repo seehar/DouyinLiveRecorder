@@ -20,7 +20,6 @@ def record_cookie_failed():
         plugin.on_cookie_invalid()
 
     # 自动获取 cookie
-    # if not config.is_using_custom_cookie() and cookie_failed == max_cookie_failed:
     if cookie_failed == max_cookie_failed:
         auto_get_cookie()
 
@@ -60,15 +59,6 @@ def auto_get_cookie():
     global cookie_cache, cookie_failed
     logger.info(f"获取cookie中...")
 
-    # browser = Browser()
-    # browser.open('https://www.douyin.com')
-    # browser.driver.set_page_load_timeout(10)
-    # time.sleep(1)
-    # browser.driver.refresh()
-    # browser.driver.set_page_load_timeout(10)
-    # time.sleep(1)
-    # cookie_cache = cookies2str(browser.driver.get_cookies())
-
     url = "https://live.douyin.com"
     cookie = "__ac_nonce=0638733a400869171be51"
     header = {
@@ -91,13 +81,3 @@ def auto_get_cookie():
         logger.exception(f"cookie获取失败")
 
     cookie_failed = 0
-
-    # browser.quit()
-
-
-# def get_danmu_cookie():
-#     cookie_only_used_for_danmu = config.get_cookie_only_used_for_danmu()
-#     if cookie_only_used_for_danmu is not None and len(cookie_only_used_for_danmu) > 0:
-#         return cookie_only_used_for_danmu
-#     else:
-#         return cookie_cache

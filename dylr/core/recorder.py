@@ -5,17 +5,16 @@
 :brief: 录制器核心
 """
 
-import time
 import os.path
-
+import time
 from threading import Thread
 
 import requests
 from requests.adapters import HTTPAdapter
 
-from dylr.plugin import plugin
-from dylr.core import app, config, monitor, record_manager, transcode_manager, dy_api
+from dylr.core import config, monitor, record_manager, transcode_manager, dy_api
 from dylr.core.recording import Recording
+from dylr.plugin import plugin
 from dylr.util import logger, cookie_utils
 
 
@@ -60,10 +59,6 @@ def start_recording(room, browser=None, filename=None, stream_url=None):
     record_manager.recordings.append(rec)
     plugin.on_live_start(room, filename)
 
-    # GUI
-    if app.win_mode:
-        app.win.set_state(room, "正在录制", color="#0000bb")
-
     def download():
         s = requests.Session()
         s.mount(stream_url, HTTPAdapter(max_retries=3))
@@ -79,8 +74,8 @@ def start_recording(room, browser=None, filename=None, stream_url=None):
                 )
                 break
             except (
-                requests.exceptions.ReadTimeout,
-                requests.exceptions.ConnectionError,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ConnectionError,
             ):
                 logger.error(f"{room.room_name}({room.room_id})直播获取超时，正在重试({retry})")
         if not os.path.exists("download"):
@@ -115,10 +110,6 @@ def start_recording(room, browser=None, filename=None, stream_url=None):
                     file_info = str(f.read())
                 if "<head><title>404 Not Found</title></head>" in file_info:
                     os.remove(filename)
-
-        # GUI
-        if app.win_mode:
-            app.win.set_state(room, "未开播", color="#000000")
 
         # 自动转码
         if config.is_auto_transcode():

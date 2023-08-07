@@ -3,10 +3,10 @@ import os
 import requests
 from requests.adapters import HTTPAdapter
 
-from dylr.plugin import plugin
-from dylr.core import app, config, transcode_manager
+from dylr.core import config, transcode_manager
 from dylr.core.room import Room
 from dylr.core.room_info import RoomInfo
+from dylr.plugin import plugin
 from dylr.util import cookie_utils, logger
 
 
@@ -29,9 +29,6 @@ class VideoRecorder:
 
         # 获取成功，清除 cookie failed 记录
         cookie_utils.cookie_failed = 0
-        # GUI
-        if app.win_mode:
-            app.win.set_state(self.room, "正在录制", color="#0000bb")
 
         s = requests.Session()
         s.mount(stream_url, HTTPAdapter(max_retries=3))
@@ -46,8 +43,8 @@ class VideoRecorder:
                 )
                 break
             except (
-                requests.exceptions.ReadTimeout,
-                requests.exceptions.ConnectionError,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ConnectionError,
             ):
                 logger.error(
                     f"{self.room.room_name}({self.room.room_id})直播获取超时，正在重试({retry})"
@@ -85,10 +82,6 @@ class VideoRecorder:
                     file_info = str(f.read())
                 if "<head><title>404 Not Found</title></head>" in file_info:
                     os.remove(filename)
-
-        # GUI
-        if app.win_mode:
-            app.win.set_state(self.room, "未开播", color="#000000")
 
         # 自动转码
         if config.is_auto_transcode():

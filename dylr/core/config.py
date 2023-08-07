@@ -52,20 +52,6 @@ def read_configs():
         logger.info(f"config {lv} = {rv}")
 
 
-def set_config(conf: str, info):
-    configs[conf] = info
-    logger.info(f"set config {conf} = {info}")
-    file = open("config.txt", "r+", encoding="UTF-8")
-    lines = file.readlines()
-    for index, line in enumerate(lines):
-        if line.startswith(conf + " =") or line.startswith(conf + "="):
-            lines[index] = f"{conf} = {info}\n"
-            print("found")
-    file.seek(0)
-    file.writelines(lines)
-    file.close()
-
-
 def read_rooms() -> list:
     res = []
     if not os.path.exists("rooms.json"):
