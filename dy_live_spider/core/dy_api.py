@@ -10,8 +10,10 @@ import time
 
 import requests
 
-from dylr.core.room_info import RoomInfo
-from dylr.util import cookie_utils, logger
+from dy_live_spider.core.algorithm import generate_request_params
+from dy_live_spider.core.room_info import RoomInfo
+from dy_live_spider.util import cookie_utils, logger
+from dy_live_spider.util.proxy_utils import get_proxies
 
 
 def get_api_url(room_id):
@@ -102,10 +104,10 @@ def get_api_user_url(sec_user_id):
 
 
 def get_user_info(sec_user_id):
-    ms_token = generate_random_str(132)
+    ms_token = generate_random_str(128)
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
-        "referer": "https://www.douyin.com/",
+        "Referer": "https://www.douyin.com/",
         "accept-encoding": None,
         "Cookie": cookie_utils.cookie_cache
         + "; msToken="
@@ -114,13 +116,13 @@ def get_user_info(sec_user_id):
     }
     prefix = "https://www.douyin.com/aweme/v1/web/aweme/post/?"
     query = f"device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id={sec_user_id}&max_cursor=0&locate_query=false&show_live_replay_strategy=1&count=1&publish_video_strategy_type=2&pc_client_type=1&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=2195&screen_height=1235&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=100.0.4896.75&browser_online=true&engine_name=Blink&engine_version=100.0.4896.75&os_name=Windows&os_version=10&cpu_core_num=12&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=0&webid=7201842352902161920&msToken={ms_token}"
-    response = json.loads(
-        requests.post(
-            "http://47.115.208.101:9090/xb", data={"param": query}, headers=headers
-        ).text
+    xb = generate_request_params(
+        url=prefix + query,
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
     )
-    params = response["param"]
-    resp = requests.get(prefix + params, headers=headers, proxies=get_proxies())
+    resp = requests.get(xb["param"], headers=headers, proxies=get_proxies())
+    logger.debug(resp)
+    logger.debug(resp.text)
     nickname_index = resp.text.find("nickname")
     if nickname_index == -1:
         return None, None
@@ -143,11 +145,11 @@ def get_request_headers():
     }
 
 
-def generate_random_str(randomlength):
+def generate_random_str(random_length: int) -> str:
     random_str = ""
     base_str = "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789="
     length = len(base_str) - 1
-    for _ in range(randomlength):
+    for _ in range(random_length):
         random_str += base_str[random.randint(0, length)]
     return random_str
 
@@ -159,10 +161,6 @@ def is_going_on_live(room):
         return False
     room_info = RoomInfo(room, room_json)
     return room_info.is_going_on_live()
-
-
-def get_proxies():
-    return {"http": None, "https": None}
 
 
 def get_random_ua():
@@ -214,3 +212,9 @@ def get_random_ua():
         f'"Mozilla/5.0 {random.choice(os_list)} AppleWebKit/537.36 (KHTML, like Gecko) '
         f'Chrome/{random.choice(chrome_version_list)} Safari/537.36"'
     )
+
+
+if __name__ == "__main__":
+    sec_id = "MS4wLjABAAAACiepdzBTSAQmzAeD2Bqwb1irj3A5IYpT0jOYs7_eoaU"
+    result = get_user_info(sec_id)
+    print(result)

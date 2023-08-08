@@ -4,7 +4,7 @@
 :date: 2023.02.10
 :brief: 检测的房间信息，包含是否开播、流地址等
 """
-from dylr.util import cookie_utils
+from dy_live_spider.util import cookie_utils
 
 
 class RoomInfo:

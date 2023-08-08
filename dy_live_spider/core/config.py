@@ -8,9 +8,9 @@
 import json
 import os.path
 
-from dylr.core import record_manager, app
-from dylr.core.room import Room
-from dylr.util import logger
+from dy_live_spider.core import record_manager
+from dy_live_spider.core.room import Room
+from dy_live_spider.util import logger
 
 configs = {
     "debug": True,
@@ -69,13 +69,12 @@ def read_rooms() -> list:
             user_sec_id = room_json["user_sec_id"]
         else:
             user_sec_id = None
-        res.append(
-            Room(room_id, room_name, auto_record, record_danmu, important, user_sec_id)
+        current_room = Room(
+            room_id, room_name, auto_record, record_danmu, important, user_sec_id
         )
-        if not app.win_mode:
-            print(f"加载房间 {room_name}({room_id})")
+        res.append(current_room)
         logger.info(
-            f"loaded room: {room_name}({room_id}) "
+            f"loaded room: {current_room} "
             f"auto_record={auto_record} record_danmu={record_danmu} "
             f"important={important} user_sec_id={user_sec_id}"
         )

@@ -10,9 +10,10 @@ import signal
 import sys
 import platform
 
-from dylr.core import version, config, record_manager, monitor
-from dylr.util import logger
-from dylr.plugin import plugin
+from dy_live_spider.core import version, config, record_manager, monitor
+from dy_live_spider.util import logger
+
+# from dy_live_spider.plugin import plugin
 
 # 处理 ctrl+c
 stop_all_threads = False
@@ -23,7 +24,7 @@ def init():
     signal.signal(signal.SIGINT, sigint_handler)
     signal.signal(signal.SIGTERM, sigint_handler)
 
-    plugin.on_open()
+    # plugin.on_open()
 
     logger.info(f"software started. version: {version}.")
     logger.info(f"platform: {platform.platform()}")
@@ -34,7 +35,7 @@ def init():
     config.read_configs()
     record_manager.rooms = config.read_rooms()
 
-    plugin.on_loaded()
+    # plugin.on_loaded()
     monitor.init()
 
 
@@ -42,4 +43,4 @@ def sigint_handler(signum, frame):
     global stop_all_threads
     stop_all_threads = True
     logger.exception("catched SIGINT(Ctrl+C) signal")
-    plugin.on_close()
+    # plugin.on_close()

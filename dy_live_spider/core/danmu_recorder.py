@@ -7,9 +7,9 @@ import traceback
 import websocket
 from google.protobuf import json_format
 
-from dylr.core import dy_api, app
-from dylr.core.dy_protocol import PushFrame, Response, ChatMessage
-from dylr.util import logger, cookie_utils
+from dy_live_spider.core import dy_api, app
+from dy_live_spider.core.dy_protocol import PushFrame, Response, ChatMessage
+from dy_live_spider.util import logger, cookie_utils
 
 
 class DanmuRecorder:

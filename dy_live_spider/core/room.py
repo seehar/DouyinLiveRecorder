@@ -23,5 +23,8 @@ class Room:
         self.important = important
         self.user_sec_id = user_sec_id
 
+    def __str__(self):
+        return f"{self.room_name}({self.room_id})"
+
     def set_auto_record(self, b: bool):
         self.auto_record = b

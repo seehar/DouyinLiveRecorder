@@ -1,11 +1,12 @@
 # coding=utf-8
 import requests
 
-from dylr.core import dy_api
-from dylr.plugin import plugin
-from dylr.util import logger
+# from dy_live_spider.plugin import plugin
+from dy_live_spider.util import logger
+from dy_live_spider.util.proxy_utils import get_proxies
+from typing import Optional
 
-cookie_cache = None
+cookie_cache: str = Optional[str]
 # 记录cookie访问失败的次数
 cookie_failed = 0
 max_cookie_failed = 5
@@ -17,7 +18,7 @@ def record_cookie_failed():
     logger.debug("检测开播时返回系统繁忙")
     if cookie_failed == max_cookie_failed:
         logger.exception("多次重试无法访问资源，可能是cookie失效")
-        plugin.on_cookie_invalid()
+        # plugin.on_cookie_invalid()
 
     # 自动获取 cookie
     if cookie_failed == max_cookie_failed:
@@ -66,7 +67,7 @@ def auto_get_cookie():
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36",
         "cookie": cookie,
     }
-    resp = requests.get(url, headers=header, proxies=dy_api.get_proxies())
+    resp = requests.get(url, headers=header, proxies=get_proxies())
     ttwid = None
     for c in resp.cookies:
         if c.name == "ttwid":

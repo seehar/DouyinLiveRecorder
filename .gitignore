@@ -1,13 +1,14 @@
 .idea/
 build/
+.pytest_cache/
 
 __pycache__/
 *.py[cod]
 *$py.class
 
 /download
-/dylr/test
-/dylr/old/
+/dy_live_spider/test
+/dy_live_spider/old/
 forum.MD
 rooms - bak.json
 

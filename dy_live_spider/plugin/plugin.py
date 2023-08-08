@@ -5,8 +5,8 @@
 然后将运行方式放在下面的方法中
 比如当直播开始录制时，进行推送
 """
-from dylr.util import logger
-import dylr.core.record_manager
+from dy_live_spider.util import logger
+import dy_live_spider.core.record_manager
 
 
 def on_open(gui: bool = False):
@@ -64,7 +64,7 @@ def get_recordings() -> list:
     获取正在录制的直播列表
     :return: list: core.recording.Recording
     """
-    return dylr.core.record_manager.get_recordings()
+    return dy_live_spider.core.record_manager.get_recordings()
 
 
 def get_rooms() -> list:
@@ -72,7 +72,7 @@ def get_rooms() -> list:
     获取所有已添加的房间，包括添加但不自动录制的
     :return: list: core.room.Room
     """
-    return dylr.core.record_manager.get_rooms()
+    return dy_live_spider.core.record_manager.get_rooms()
 
 
 def get_logger():

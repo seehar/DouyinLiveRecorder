@@ -1,6 +1,4 @@
-import sys
-
-import dylr.core.app as app
+import dy_live_spider.core.app as app
 
 
 def main():

@@ -1,15 +1,16 @@
 import threading
 import time
-import traceback
+
+# import traceback
 from typing import Optional
 
-from dylr.plugin import plugin
-from dylr.core import dy_api, record_manager
-from dylr.core.danmu_recorder import DanmuRecorder
-from dylr.core.room import Room
-from dylr.core.room_info import RoomInfo
-from dylr.core.video_recorder import VideoRecorder
-from dylr.util import cookie_utils, logger
+# from dy_live_spider.plugin import plugin
+from dy_live_spider.core import dy_api, record_manager
+from dy_live_spider.core.danmu_recorder import DanmuRecorder
+from dy_live_spider.core.room import Room
+from dy_live_spider.core.room_info import RoomInfo
+from dy_live_spider.core.video_recorder import VideoRecorder
+from dy_live_spider.util import cookie_utils, logger
 
 
 class Recording:
@@ -33,10 +34,10 @@ class Recording:
         now_str = time.strftime("%Y%m%d_%H%M%S", now)
         video_filename = f"download/{self.room.room_name}/{now_str}.flv"
 
-        try:
-            plugin.on_live_start(self.room, video_filename)
-        except:
-            traceback.print_exc()
+        # try:
+        #     plugin.on_live_start(self.room, video_filename)
+        # except:
+        #     traceback.print_exc()
         self.start_recording_video(video_filename)
         if self.room.record_danmu:
             self.start_recording_danmu(now)

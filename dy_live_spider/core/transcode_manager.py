@@ -10,9 +10,9 @@ import subprocess
 import threading
 from threading import Thread
 
-from dylr.core import config
-from dylr.util import logger
-from dylr.util.ffmpeg_utils import FFMpegUtils
+from dy_live_spider.core import config
+from dy_live_spider.util import logger
+from dy_live_spider.util.ffmpeg_utils import FFMpegUtils
 
 
 # 同时只能有一个项目在转码，防止资源占用过高

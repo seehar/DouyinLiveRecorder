@@ -4,8 +4,8 @@
 :date: 2023.01.13
 :brief: 录制管理
 """
-from dylr.core.recording import Recording
-from dylr.util import logger
+from dy_live_spider.core.recording import Recording
+from dy_live_spider.util import logger
 
 rooms = []
 recordings = []

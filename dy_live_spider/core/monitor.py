@@ -12,9 +12,15 @@ from threading import Thread
 
 import requests
 
-from dylr.core.room_info import RoomInfo
-from dylr.util import logger, cookie_utils
-from dylr.core import config, record_manager, app, dy_api, monitor_thread_manager
+from dy_live_spider.core.room_info import RoomInfo
+from dy_live_spider.util import logger, cookie_utils
+from dy_live_spider.core import (
+    config,
+    record_manager,
+    app,
+    dy_api,
+    monitor_thread_manager,
+)
 
 # 重要房间检测线程
 important_room_threads = []
